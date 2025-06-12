@@ -1,10 +1,10 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 
-API_KEY = 'f8fd4fca4f48ee7dd58beaaf85edd8167196dc3ac0d1c590c4a5e529016f8e8d'
+API_KEY = 'CjQBR9mMxnrrfiGj'
 PORT = 8080
 
-current_data = {}
+current_data = []
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):
     def _set_headers(self, status_code = 200):
@@ -12,25 +12,26 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'application/json')
         self.end_headers()
 
-    def DO_GET(self):
+    def do_GET(self):
         if self.path == f'/{API_KEY}':
             self._set_headers()
             response = json.dumps(current_data).encode('utf-8')
             self.wfile.write(response)
+            current_data.clear()
         else:
             self._set_headers(404)
             self.wfile.write(b'{"error": "Not found"}')
     
-    def DO_POST(self):
+    def do_POST(self):
         if self.path == f'/{API_KEY}':
-            content_lenth = int(self.headers.get('Content-Lenth', 0))
-            body = self.rfile.read(content_lenth)
+            content_length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(content_length)
             try:
-                global current_data
-                current_data = json.loads(body)
-                self._set_headers(200)
-                self.wfile.write(b'{"status": "Data received"}')
-            except json.JSONDecodeError:
+                data = json.loads(body)
+                current_data.append(data)
+                self._set_headers()
+                self.wfile.write(b'{"status": "Data added"}')
+            except json.JSONDecodeError as e:
                 self._set_headers(400)
                 self.wfile.write(b'{"error": "Invalid JSON"}')
         else:
