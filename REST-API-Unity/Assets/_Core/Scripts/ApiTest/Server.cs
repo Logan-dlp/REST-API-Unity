@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 
 namespace logandlp.apitest
 {
@@ -6,12 +7,14 @@ namespace logandlp.apitest
 
     public class Server : MonoBehaviour
     {
+        [SerializeField] private UnityEvent<Data> _onDataReceived;
+        
         private void Update()
         {
             StartCoroutine(RestAPIHandler<Data>.Get((data) => {
                 if (data != null)
                 {
-                    Debug.Log(data.Message);
+                    _onDataReceived?.Invoke(data);
                 }
             }));
         }
