@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 
 namespace logandlp.apitest
 {
@@ -6,14 +7,11 @@ namespace logandlp.apitest
     
     public class Client : MonoBehaviour
     {
-        [SerializeField] private string _message;
-
-        [ContextMenu("Send Message")]
-        public void Send()
+        public void SendMessages(TextMeshProUGUI message)
         {
             Data data = new()
             {
-                Message = _message
+                Message = message.text
             };
 
             StartCoroutine(RestAPIHandler<Data>.Post(data));
